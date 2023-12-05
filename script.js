@@ -1,192 +1,219 @@
-const quizData = [
+//References
+let timeLeft = document.querySelector(".time-left");
+let quizContainer = document.getElementById("container");
+let nextBtn = document.getElementById("next-button");
+let countOfQuestion = document.querySelector(".number-of-question");
+let displayContainer = document.getElementById("display-container");
+let scoreContainer = document.querySelector(".score-container");
+let restart = document.getElementById("restart");
+let userScore = document.getElementById("user-score");
+let startScreen = document.querySelector(".start-screen");
+let startButton = document.getElementById("start-button");
+let questionCount;
+let scoreCount = 0;
+let count = 11;
+let countdown;
+
+//Questions and Options array
+
+const quizArray = [
     {
-      question: 'What is the capital of France?',
-      options: ['Paris', 'London', 'Berlin', 'Madrid'],
-      answer: 'Paris',
+        id: "0",
+        question: "Which is the most widely spoken language in the world?",
+        options: ["Spanish", "Mandarin", "English", "German"],
+        correct: "Mandarin",
     },
     {
-      question: 'What is the largest planet in our solar system?',
-      options: ['Mars', 'Saturn', 'Jupiter', 'Neptune'],
-      answer: 'Jupiter',
+        id: "1",
+        question: "Which is the only continent in the world without a desert?",
+        options: ["North America", "Asia", "Africa", "Europe"],
+        correct: "Europe",
     },
     {
-      question: 'Which country won the FIFA World Cup in 2018?',
-      options: ['Brazil', 'Germany', 'France', 'Argentina'],
-      answer: 'France',
+        id: "2",
+        question: "Who invented Computer?",
+        options: ["Charles Babbage", "Henry Luce", "Henry Babbage", "Charles Luce"],
+        correct: "Charles Babbage",
     },
     {
-      question: 'What is the tallest mountain in the world?',
-      options: ['Mount Everest', 'K2', 'Kangchenjunga', 'Makalu'],
-      answer: 'Mount Everest',
+        id: "3",
+        question: "What do you call a computer on a network that requests files from another computer?",
+        options: ["A client", "A host", "A router", "A web server"],
+        correct: "A client",
     },
     {
-      question: 'Which is the largest ocean on Earth?',
-      options: [
-        'Pacific Ocean',
-        'Indian Ocean',
-        'Atlantic Ocean',
-        'Arctic Ocean',
-      ],
-      answer: 'Pacific Ocean',
+        id: "4",
+        question: "Hardware devices that are not part of the main computer system and are often added later to the system.",
+        options: ["Peripheral", "Clip art", "Highlight", "Execute"],
+        correct: "Peripheral",
     },
     {
-      question: 'What is the chemical symbol for gold?',
-      options: ['Au', 'Ag', 'Cu', 'Fe'],
-      answer: 'Au',
+        id: "5",
+        question: "The main computer that stores the files that can be sent to computers that are networked together is:",
+        options: ["Clip art", "Mother board", "Peripheral", "File server"],
+        correct: "File server",
+    }, {
+        id: "6",
+        question: "How can you catch a computer virus?",
+        options: ["Sending e-mail messages", "Using a laptop during the winter", "Opening e-mail attachments", "Shopping on-line"],
+        correct: "Opening e-mail attachments",
     },
     {
-      question: 'Who painted the Mona Lisa?',
-      options: [
-        'Pablo Picasso',
-        'Vincent van Gogh',
-        'Leonardo da Vinci',
-        'Michelangelo',
-      ],
-      answer: 'Leonardo da Vinci',
+        id: "7",
+        question: "Google (www.google.com) is a:",
+        options: ["Search Engine", "Number in Math", "Directory of images", "Chat service on the web"],
+        correct: "Search Engine",
     },
     {
-      question: 'Which planet is known as the Red Planet?',
-      options: ['Mars', 'Venus', 'Mercury', 'Uranus'],
-      answer: 'Mars',
+        id: "8",
+        question: "Which is not an Internet protocol?",
+        options: ["HTTP", "FTP", "STP", "IP"],
+        correct: "STP",
     },
     {
-      question: 'What is the largest species of shark?',
-      options: [
-        'Great White Shark',
-        'Whale Shark',
-        'Tiger Shark',
-        'Hammerhead Shark',
-      ],
-      answer: 'Whale Shark',
+        id: "9",
+        question: "Which of the following is not a valid domain name?",
+        options: ["www.yahoo.com", "www.yahoo.co.uk", "www.com.yahoo", "www.yahoo.co.in"],
+        correct: "www.com.yahoo",
     },
-    {
-      question: 'Which animal is known as the King of the Jungle?',
-      options: ['Lion', 'Tiger', 'Elephant', 'Giraffe'],
-      answer: 'Lion',
-    },
-  ];
-  
-  const quizContainer = document.getElementById('quiz');
-  const resultContainer = document.getElementById('result');
-  const submitButton = document.getElementById('submit');
-  const retryButton = document.getElementById('retry');
-  const showAnswerButton = document.getElementById('showAnswer');
-  
-  let currentQuestion = 0;
-  let score = 0;
-  let incorrectAnswers = [];
-  
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-  }
-  
-  function displayQuestion() {
-    const questionData = quizData[currentQuestion];
-  
-    const questionElement = document.createElement('div');
-    questionElement.className = 'question';
-    questionElement.innerHTML = questionData.question;
-  
-    const optionsElement = document.createElement('div');
-    optionsElement.className = 'options';
-  
-    const shuffledOptions = [...questionData.options];
-    shuffleArray(shuffledOptions);
-  
-    for (let i = 0; i < shuffledOptions.length; i++) {
-      const option = document.createElement('label');
-      option.className = 'option';
-  
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = 'quiz';
-      radio.value = shuffledOptions[i];
-  
-      const optionText = document.createTextNode(shuffledOptions[i]);
-  
-      option.appendChild(radio);
-      option.appendChild(optionText);
-      optionsElement.appendChild(option);
-    }
-  
-    quizContainer.innerHTML = '';
-    quizContainer.appendChild(questionElement);
-    quizContainer.appendChild(optionsElement);
-  }
-  
-  function checkAnswer() {
-    const selectedOption = document.querySelector('input[name="quiz"]:checked');
-    if (selectedOption) {
-      const answer = selectedOption.value;
-      if (answer === quizData[currentQuestion].answer) {
-        score++;
-      } else {
-        incorrectAnswers.push({
-          question: quizData[currentQuestion].question,
-          incorrectAnswer: answer,
-          correctAnswer: quizData[currentQuestion].answer,
-        });
-      }
-      currentQuestion++;
-      selectedOption.checked = false;
-      if (currentQuestion < quizData.length) {
-        displayQuestion();
-      } else {
-        displayResult();
-      }
-    }
-  }
-  
-  function displayResult() {
-    quizContainer.style.display = 'none';
-    submitButton.style.display = 'none';
-    retryButton.style.display = 'inline-block';
-    showAnswerButton.style.display = 'inline-block';
-    resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}!`;
-  }
-  
-  function retryQuiz() {
-    currentQuestion = 0;
-    score = 0;
-    incorrectAnswers = [];
-    quizContainer.style.display = 'block';
-    submitButton.style.display = 'inline-block';
-    retryButton.style.display = 'none';
-    showAnswerButton.style.display = 'none';
-    resultContainer.innerHTML = '';
-    displayQuestion();
-  }
-  
-  function showAnswer() {
-    quizContainer.style.display = 'none';
-    submitButton.style.display = 'none';
-    retryButton.style.display = 'inline-block';
-    showAnswerButton.style.display = 'none';
-  
-    let incorrectAnswersHtml = '';
-    for (let i = 0; i < incorrectAnswers.length; i++) {
-      incorrectAnswersHtml += `
-        <p>
-          <strong>Question:</strong> ${incorrectAnswers[i].question}<br>
-          <strong>Your Answer:</strong> ${incorrectAnswers[i].incorrectAnswer}<br>
-          <strong>Correct Answer:</strong> ${incorrectAnswers[i].correctAnswer}
-        </p>
-      `;
-    }
-  
-    resultContainer.innerHTML = `
-      <p>You scored ${score} out of ${quizData.length}!</p>
-      <p>Incorrect Answers:</p>
-      ${incorrectAnswersHtml}
+];
+
+//Restart Quiz
+restart.addEventListener("click", () => {
+    initial();
+    displayContainer.classList.remove("hide");
+    scoreContainer.classList.add("hide");
+});
+
+//Next Button
+nextBtn.addEventListener(
+    "click",
+    (displayNext = () => {
+        //increment questionCount
+        questionCount += 1;
+        //if last question
+        if (questionCount == quizArray.length) {
+            //hide question container and display score
+            displayContainer.classList.add("hide");
+            scoreContainer.classList.remove("hide");
+            //user score
+            userScore.innerHTML =
+                "Your score is " + scoreCount + " out of " + questionCount;
+        } else {
+            //display questionCount
+            countOfQuestion.innerHTML =
+                questionCount + 1 + " of " + quizArray.length + " Question";
+            //display quiz
+            quizDisplay(questionCount);
+            count = 11;
+            clearInterval(countdown);
+            timerDisplay();
+        }
+    })
+);
+
+//Timer
+const timerDisplay = () => {
+    countdown = setInterval(() => {
+        count--;
+        timeLeft.innerHTML = `${count}s`;
+        if (count == 0) {
+            clearInterval(countdown);
+            displayNext();
+        }
+    }, 1000);
+};
+
+//Display quiz
+const quizDisplay = (questionCount) => {
+    let quizCards = document.querySelectorAll(".container-mid");
+    //Hide other cards
+    quizCards.forEach((card) => {
+        card.classList.add("hide");
+    });
+    //display current question card
+    quizCards[questionCount].classList.remove("hide");
+};
+
+//Quiz Creation
+function quizCreator() {
+    //randomly sort questions
+    quizArray.sort(() => Math.random() - 0.5);
+    //generate quiz
+    for (let i of quizArray) {
+        //randomly sort options
+        i.options.sort(() => Math.random() - 0.5);
+        //quiz card creation
+        let div = document.createElement("div");
+        div.classList.add("container-mid", "hide");
+        //question number
+        countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+        //question
+        let question_DIV = document.createElement("p");
+        question_DIV.classList.add("question");
+        question_DIV.innerHTML = i.question;
+        div.appendChild(question_DIV);
+        //options
+        div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
     `;
-  }
-  
-  submitButton.addEventListener('click', checkAnswer);
-  retryButton.addEventListener('click', retryQuiz);
-  showAnswerButton.addEventListener('click', showAnswer);
-  
-  displayQuestion();
-  
+        quizContainer.appendChild(div);
+    }
+}
+
+//Checker Function to check if option is correct or not
+function checker(userOption) {
+    let userSolution = userOption.innerText;
+    let question =
+        document.getElementsByClassName("container-mid")[questionCount];
+    let options = question.querySelectorAll(".option-div");
+
+    //if user clicked answer == correct option stored in object
+    if (userSolution === quizArray[questionCount].correct) {
+        userOption.classList.add("correct");
+        scoreCount++;
+    } else {
+        userOption.classList.add("incorrect");
+        //For marking the correct option
+        options.forEach((element) => {
+            if (element.innerText == quizArray[questionCount].correct) {
+                element.classList.add("correct");
+            }
+        });
+    }
+
+    //clear interval(stop timer)
+    clearInterval(countdown);
+    //disable all options
+    options.forEach((element) => {
+        element.disabled = true;
+    });
+}
+
+//initial setup
+function initial() {
+    quizContainer.innerHTML = "";
+    questionCount = 0;
+    scoreCount = 0;
+    count = 11;
+    clearInterval(countdown);
+    timerDisplay();
+    quizCreator();
+    quizDisplay(questionCount);
+}
+
+//when user click on start button
+startButton.addEventListener("click", () => {
+    startScreen.classList.add("hide");
+    displayContainer.classList.remove("hide");
+    initial();
+});
+
+//hide quiz and display start screen
+window.onload = () => {
+    startScreen.classList.remove("hide");
+    displayContainer.classList.add("hide");
+};
